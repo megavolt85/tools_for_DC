@@ -1,0 +1,2 @@
+gdiopt.exe GDI/
+pause
