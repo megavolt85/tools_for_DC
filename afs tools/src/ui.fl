@@ -1,0 +1,177 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0303 
+header_name {.h} 
+code_name {.cxx}
+class AFSToolsUI {open
+} {
+  Function {AFSToolsUI()} {open
+  } {
+    Fl_Window m_window {
+      label {AFS Tools} open
+      xywh {402 217 305 640} type Double box GLEAM_ROUND_DOWN_BOX color 156 selection_color 47 visible
+    } {
+      Fl_Choice mode_sel {
+        label {Выбор режима:} open
+        xywh {20 40 135 25} box NO_BOX down_box BORDER_BOX color 206 labeltype ENGRAVED_LABEL labelsize 16 align 1
+      } {
+        MenuItem btn_unpack {
+          label {Распаковать}
+          xywh {0 0 100 20}
+        }
+        MenuItem btn_pack {
+          label {Упаковать}
+          xywh {0 0 100 20}
+        }
+      }
+      Fl_File_Browser fbrowser1 {
+        xywh {20 120 265 460} type Hold box GLEAM_ROUND_DOWN_BOX color 52 when 1
+      }
+      Fl_Light_Button btn_all_files {
+        label {Всё в папке}
+        xywh {20 80 115 25} box GLEAM_UP_BOX down_box GLEAM_ROUND_DOWN_BOX color 206 selection_color 63 when 6
+      }
+      Fl_Group {} {
+        label {Список имён} open
+        xywh {160 10 120 100} box GTK_DOWN_BOX color 156 labeltype EMBOSSED_LABEL labelsize 16 align 17
+      } {
+        Fl_Round_Button rb_ff {
+          label {из файла} user_data_type {void*}
+          xywh {170 40 100 20} type Radio down_box ROUND_DOWN_BOX value 1
+        }
+        Fl_Round_Button rb_fl {
+          label {из *.lst} user_data_type {void*}
+          xywh {170 60 100 20} type Radio down_box ROUND_DOWN_BOX when 6
+        }
+        Fl_Round_Button rb_nn {
+          label {без имён} user_data_type {void*}
+          xywh {170 80 100 20} type Radio down_box ROUND_DOWN_BOX
+        }
+      }
+      Fl_Button run_btn {
+        label {Распаковать}
+        xywh {80 590 135 30} box GLEAM_ROUND_UP_BOX down_box GLEAM_ROUND_DOWN_BOX color 206 labeltype EMBOSSED_LABEL labelsize 18 deactivate
+      }
+    }
+  }
+} 
+
+class OF_Choiser {open
+} {
+  Function {OF_Choiser(Fl_Double_Window *hwnd, const char* path, const char* filter)} {open
+  } {
+    Fl_Window m_win {open
+      xywh {1227 218 310 540} type Double box GLEAM_ROUND_DOWN_BOX color 156 noborder visible
+    } {
+      Fl_File_Browser fb {
+        user_data this
+        callback cb_fb
+        xywh {5 5 300 485} type Hold box GLEAM_ROUND_DOWN_BOX color 52 when 1
+      }
+      Fl_Return_Button sel_btn {
+        label {Готово}
+        user_data this
+        callback cb_select_btn
+        xywh {20 495 115 25} box GLEAM_ROUND_UP_BOX color 206 labeltype ENGRAVED_LABEL labelsize 18 deactivate
+      }
+      Fl_Button {} {
+        label {Отмена}
+        user_data this
+        callback cb_cancel_btn
+        xywh {170 495 115 25} box GLEAM_ROUND_UP_BOX color 206 labeltype ENGRAVED_LABEL labelsize 18
+      }
+    }
+    code {parent_win = hwnd;
+fb->filetype(Fl_File_Browser::FILES);
+fb->filter(filter);
+fb->load(path);} {}
+  }
+  Function {show()} {open
+  } {
+    code {parent_win->hide();
+m_win->show();
+filename = NULL;} {}
+  }
+  Function {visible()} {open return_type int
+  } {
+    code {return m_win->visible();} {}
+  }
+  Function {value()} {open return_type {char*}
+  } {
+    code {return filename;} {}
+  }
+  decl {Fl_Double_Window *parent_win;} {public local
+  }
+  decl {char* filename;} {public local
+  }
+} 
+
+Function {cb_cancel_btn(Fl_Button* b, void* d)} {open
+} {
+  code {fc->filename = NULL;
+fc->parent_win->show();
+fc->m_win->hide();} {}
+} 
+
+decl {extern OF_Choiser *fc;} {public global
+} 
+
+Function {cb_select_btn(Fl_Return_Button* b, void* d)} {open
+} {
+  code {fc->parent_win->show();
+fc->m_win->hide();} {}
+} 
+
+Function {cb_fb(Fl_File_Browser *fb, void* userdata)} {open
+} {
+  code {int i, ln = fb->size();
+	
+	for (i = 0; i <= ln; i++)
+	{
+		if (fb->selected(i))
+			break;
+	}
+	
+	if (i > ln)
+	{
+		fc->sel_btn->deactivate();
+		fc->filename = NULL;
+		return;
+	}
+	
+	printf("%s\\n", fb->text(i));
+	fc->sel_btn->activate();
+	fc->filename = (char *) fb->text(i);} {}
+} 
+
+class Progress_Bar {open
+} {
+  Function {Progress_Bar(Fl_Double_Window *hwnd)} {open
+  } {
+    Fl_Window m_win {open
+      xywh {700 413 500 115} type Single box GLEAM_ROUND_DOWN_BOX color 156 noborder visible
+    } {
+      Fl_Progress w_pbar1 {
+        label {0/0}
+        xywh {15 15 470 35} box GLEAM_ROUND_DOWN_BOX color 212 selection_color 63 labeltype EMBOSSED_LABEL labelfont 10 labelsize 24
+      }
+      Fl_Progress w_pbar2 {
+        label {0%}
+        xywh {15 66 470 35} box GLEAM_ROUND_DOWN_BOX color 212 selection_color 63 labeltype EMBOSSED_LABEL labelfont 10 labelsize 24
+      }
+    }
+    code {parent_win = hwnd;} {}
+  }
+  decl {Fl_Double_Window *parent_win;} {public local
+  }
+  Function {show()} {open
+  } {
+    code {parent_win->hide();
+m_win->show();} {}
+  }
+  Function {hide()} {open
+  } {
+    code {m_win->hide();
+parent_win->show();} {selected
+    }
+  }
+} 
