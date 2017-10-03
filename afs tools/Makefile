@@ -8,10 +8,9 @@ LIB_LINUX_GUI = -lfltk -Isrc/ -lX11 -lXft -lXext -lXfixes -lfontconfig -ldl -lm 
 
 #for win32
 CC_WIN32= i586-mingw32msvc-g++
-LIB_WIN32= -I/usr/i586-mingw32msvc/include -L/usr/i586-mingw32msvc/lib -lmingw32 -luser32 -lgdi32 -lwinmm -ldxguid -lwldap32 -lws2_32 -lstdc++
-#-static -static-libstdc++ -static-libgcc
+LIB_WIN32= -I/usr/i586-mingw32msvc/include -L/usr/i586-mingw32msvc/lib -lmingw32 -luser32 -lgdi32 -lwinmm -ldxguid -lstdc++
 LIB_WIN32_GUI = -lfltk -lole32 -luuid -lcomctl32 -Isrc/
-CFLAGS_WIN32 = -mwindows
+
 
 
 all: clean linux win32 linux_gui win32_gui
@@ -24,7 +23,7 @@ linux:
 win32: resources.o
 # Compiling for win32
 	$(CC_WIN32) $(OBJS) src/resources.o -o $(TARGET).exe $(LIB_WIN32) -DNO_GUI
-#	i586-mingw32msvc-strip $(TARGET).exe
+	i586-mingw32msvc-strip $(TARGET).exe
 
 linux_gui:
 # Compiling for linux
@@ -33,7 +32,7 @@ linux_gui:
 
 win32_gui: resources.o
 # Compiling for win32
-	$(CC_WIN32) $(OBJS) $(OBJS_GUI) src/resources.o -o $(TARGET)_gui.exe $(LIB_WIN32_GUI) $(LIB_WIN32) -Wno-deprecated-declarations
+	$(CC_WIN32) $(OBJS) $(OBJS_GUI) src/resources.o -o $(TARGET)_gui.exe $(LIB_WIN32_GUI) $(LIB_WIN32) -Wno-deprecated-declarations -mwindows
 	i586-mingw32msvc-strip $(TARGET)_gui.exe
 
 clean:
